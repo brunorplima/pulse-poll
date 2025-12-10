@@ -1,0 +1,20 @@
+# Render Blueprint - Infrastructure as Code
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: pulse-poll-api
+    runtime: ruby
+    plan: free
+    buildCommand: ./bin/render-build.sh
+    startCommand: bundle exec puma -C config/puma.rb
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually from Supabase
+      - key: RAILS_MASTER_KEY
+        sync: false  # Set manually from config/master.key
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+
