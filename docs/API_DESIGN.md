@@ -28,10 +28,12 @@ All API endpoints are prefixed with `/api`.
 
 ```json
 {
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "user@example.com",
-  "password": "securepassword123"
+  "user": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "user@example.com",
+    "password": "securepassword123"
+  }
 }
 ```
 
@@ -69,8 +71,10 @@ All API endpoints are prefixed with `/api`.
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "securepassword123"
+  "user": {
+    "email": "user@example.com",
+    "password": "securepassword123"
+  }
 }
 ```
 

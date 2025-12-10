@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
-  post 'register', to: 'authentication#register'
-  post 'login', to: 'authentication#login'
+  # API routes
+  scope :api, as: :api do
+    scope :auth, as: :auth do
+      post 'register', to: 'authentication#register', as: :register
+      post 'login', to: 'authentication#login', as: :login
+    end
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
