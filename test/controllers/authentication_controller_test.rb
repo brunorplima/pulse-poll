@@ -128,4 +128,65 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal users(:one).id, decoded['user_id']
   end
+
+  # --- Logout tests ---
+
+  test "logout with valid token returns success message" do
+    token = JwtService.encode({ user_id: users(:one).id, token_version: users(:one).token_version })
+
+    post api_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 'Logged out successfully', json_response['message']
+  end
+
+  test "logout increments token_version in database" do
+    user = users(:one)
+    original_version = user.token_version
+    token = JwtService.encode({ user_id: user.id, token_version: user.token_version })
+
+    post api_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+
+    assert_response :ok
+    user.reload
+    assert_equal original_version + 1, user.token_version
+  end
+
+  test "logout without token returns unauthorized" do
+    post api_auth_logout_url, as: :json
+
+    assert_response :unauthorized
+    json_response = JSON.parse(response.body)
+    assert_equal 'Missing token', json_response['error']
+  end
+
+  test "using old token after logout returns unauthorized" do
+    user = users(:one)
+    token = JwtService.encode({ user_id: user.id, token_version: user.token_version })
+
+    # First logout succeeds
+    post api_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+    assert_response :ok
+
+    # Second request with same token fails (token was revoked)
+    post api_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+    assert_response :unauthorized
+    json_response = JSON.parse(response.body)
+    assert_equal 'Token has been revoked', json_response['error']
+  end
+
+  test "login token contains correct token_version" do
+    post api_auth_login_url, params: {
+      user: {
+        email: users(:one).email,
+        password: "password123"
+      }
+    }, as: :json
+
+    json_response = JSON.parse(response.body)
+    decoded = JwtService.decode(json_response['token'])
+
+    assert_equal users(:one).token_version, decoded['token_version']
+  end
 end
