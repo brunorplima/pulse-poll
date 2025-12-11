@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     scope :auth, as: :auth do
       post 'register', to: 'authentication#register', as: :register
       post 'login', to: 'authentication#login', as: :login
+      post 'logout', to: 'authentication#logout', as: :logout
     end
   end
 

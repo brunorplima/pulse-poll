@@ -21,15 +21,23 @@ module Authenticable
     payload = handle_payload(token)
     return if payload.blank?
 
-    user_id = payload['user_id']
-    user = User.find_by(id: user_id)
+    user = User.find_by(id: payload['user_id'])
 
     if user.blank?
       render json: { error: 'User does not exist' }, status: :unauthorized
       return
     end
 
+    if user.token_version != payload['token_version']
+      render json: { error: 'Token has been revoked' }, status: :unauthorized
+      return
+    end
+
     @current_user = user
+  end
+
+  def current_user
+    @current_user
   end
 
   private

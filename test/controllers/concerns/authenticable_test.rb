@@ -83,7 +83,7 @@ class AuthenticableTest < ActiveSupport::TestCase
 
   test "sets current_user with valid token" do
     user = users(:one)
-    token = JwtService.encode({ user_id: user.id })
+    token = JwtService.encode({ user_id: user.id, token_version: user.token_version })
     @controller.request.headers['Authorization'] = "Bearer #{token}"
 
     @controller.authenticate_user
@@ -93,12 +93,34 @@ class AuthenticableTest < ActiveSupport::TestCase
 
   test "does not render error with valid token" do
     user = users(:one)
-    token = JwtService.encode({ user_id: user.id })
+    token = JwtService.encode({ user_id: user.id, token_version: user.token_version })
     @controller.request.headers['Authorization'] = "Bearer #{token}"
 
     @controller.authenticate_user
 
     assert_nil @controller.rendered_response
     assert_nil @controller.rendered_status
+  end
+
+  test "returns unauthorized when token_version does not match" do
+    user = users(:one)
+    token = JwtService.encode({ user_id: user.id, token_version: user.token_version + 1 })
+    @controller.request.headers['Authorization'] = "Bearer #{token}"
+
+    @controller.authenticate_user
+
+    assert_equal({ error: 'Token has been revoked' }, @controller.rendered_response)
+    assert_equal :unauthorized, @controller.rendered_status
+  end
+
+  test "returns unauthorized when token_version is missing from token" do
+    user = users(:one)
+    token = JwtService.encode({ user_id: user.id })
+    @controller.request.headers['Authorization'] = "Bearer #{token}"
+
+    @controller.authenticate_user
+
+    assert_equal({ error: 'Token has been revoked' }, @controller.rendered_response)
+    assert_equal :unauthorized, @controller.rendered_status
   end
 end

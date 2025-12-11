@@ -7,6 +7,7 @@
 #  first_name      :string
 #  last_name       :string
 #  password_digest :string
+#  token_version   :integer          default(0), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
@@ -15,8 +16,6 @@
 #  index_users_on_email  (email) UNIQUE
 #
 require "test_helper"
-
-# User.new(email: 'new.user@email.com', password: 'password123', first_name: 'Mark', last_name: 'Hensson')
 
 class UserTest < ActiveSupport::TestCase
 
@@ -74,5 +73,23 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.save
     assert_equal user.errors[:last_name].count, 1
     assert_includes user.errors[:last_name], "can't be blank"
+  end
+
+  # --- token_version ---
+
+  test "token_version defaults to 0 for new users" do
+    user = User.new(email: 'new.user@email.com', password: 'password123', first_name: 'Mark', last_name: 'Hensson')
+    user.save
+
+    assert_equal 0, user.token_version
+  end
+
+  test "token_version can be incremented" do
+    user = users(:one)
+    original_version = user.token_version
+
+    user.increment!(:token_version)
+
+    assert_equal original_version + 1, user.token_version
   end
 end
