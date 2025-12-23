@@ -22,8 +22,8 @@ class JwtServiceTest < ActiveSupport::TestCase
     token = JwtService.encode(payload)
     decoded = JwtService.decode(token)
 
-    assert decoded['exp'].present?
-    assert decoded['exp'] > Time.now.to_i
+    assert_predicate decoded['exp'], :present?
+    assert_operator decoded['exp'], :>, Time.now.to_i
   end
 
   test "decode raises error for expired token" do
@@ -44,11 +44,10 @@ class JwtServiceTest < ActiveSupport::TestCase
   test "decode raises error for tampered token" do
     payload = { user_id: 1 }
     token = JwtService.encode(payload)
-    tampered_token = token + "tampered"
+    tampered_token = "#{token}tampered"
 
     assert_raises JWT::DecodeError do
       JwtService.decode(tampered_token)
     end
   end
 end
-

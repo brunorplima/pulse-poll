@@ -14,9 +14,10 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :created
-    json_response = JSON.parse(response.body)
-    assert json_response['token'].present?
-    assert json_response['user_id'].present?
+    json_response = response.parsed_body
+
+    assert_predicate json_response['token'], :present?
+    assert_predicate json_response['user_id'], :present?
     assert_equal 'User created successfully', json_response['message']
   end
 
@@ -43,8 +44,9 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :unprocessable_content
-    json_response = JSON.parse(response.body)
-    assert json_response['error'].present?
+    json_response = response.parsed_body
+
+    assert_predicate json_response['error'], :present?
   end
 
   test "register with short password returns unprocessable entity" do
@@ -71,7 +73,8 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :unprocessable_content
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
+
     assert_includes json_response['error'], "Email has already been taken"
   end
 
@@ -86,8 +89,9 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :ok
-    json_response = JSON.parse(response.body)
-    assert json_response['token'].present?
+    json_response = response.parsed_body
+
+    assert_predicate json_response['token'], :present?
     assert_equal users(:one).id, json_response['user_id']
   end
 
@@ -100,7 +104,8 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :unauthorized
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
+
     assert_equal "Invalid email or password", json_response['error']
   end
 
@@ -123,7 +128,7 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
       }
     }, as: :json
 
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
     decoded = JwtService.decode(json_response['token'])
 
     assert_equal users(:one).id, decoded['user_id']
@@ -137,7 +142,8 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     post api_v1_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
 
     assert_response :ok
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
+
     assert_equal 'Logged out successfully', json_response['message']
   end
 
@@ -150,6 +156,7 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     user.reload
+
     assert_equal original_version + 1, user.token_version
   end
 
@@ -157,7 +164,8 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
     post api_v1_auth_logout_url, as: :json
 
     assert_response :unauthorized
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
+
     assert_equal 'Missing token', json_response['error']
   end
 
@@ -167,12 +175,15 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
 
     # First logout succeeds
     post api_v1_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+
     assert_response :ok
 
     # Second request with same token fails (token was revoked)
     post api_v1_auth_logout_url, headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+
     assert_response :unauthorized
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
+
     assert_equal 'Token has been revoked', json_response['error']
   end
 
@@ -184,7 +195,7 @@ class Api::V1::AuthenticationControllerTest < ActionDispatch::IntegrationTest
       }
     }, as: :json
 
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
     decoded = JwtService.decode(json_response['token'])
 
     assert_equal users(:one).token_version, decoded['token_version']

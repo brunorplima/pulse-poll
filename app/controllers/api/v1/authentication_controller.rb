@@ -2,7 +2,7 @@
 module Api
   module V1
     class AuthenticationController < BaseController
-      skip_before_action :authenticate_user, only: [:register, :login]
+      skip_before_action :authenticate_user, only: %i[register login]
 
       # POST /api/v1/auth/register - Creates a new user and returns JWT token.
       def register
@@ -20,17 +20,15 @@ module Api
       # POST /api/v1/auth/login - Authenticates user and returns JWT token.
       def login
         user = User.find_by(email: user_params[:email])
-        if user&.authenticate(user_params[:password])
-          token = JwtService.encode({ user_id: user.id, token_version: user.token_version })
-          render json: { token: token, user_id: user.id }, status: :ok
-        else
-          raise ApiError::Unauthorized.new 'Invalid email or password'
-        end
+        raise ApiError::Unauthorized, 'Invalid email or password' unless user&.authenticate(user_params[:password])
+
+        token = JwtService.encode({ user_id: user.id, token_version: user.token_version })
+        render json: { token: token, user_id: user.id }, status: :ok
       end
 
       # POST /api/v1/auth/logout - Logout authenticated user
       def logout
-        current_user.increment!(:token_version)
+        current_user.increment(:token_version)
         render json: { message: 'Logged out successfully' }, status: :ok
       end
 

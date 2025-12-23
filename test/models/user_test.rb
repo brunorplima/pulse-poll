@@ -18,9 +18,9 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-
   test "should save when all data is valid" do
     user = User.new(email: 'Mark.h@email.com', password: 'password123', first_name: 'Mark', last_name: 'Hensson')
+
     assert user.save
   end
 
@@ -28,23 +28,26 @@ class UserTest < ActiveSupport::TestCase
 
   test "should not save without email" do
     user = User.new(password: 'password123', first_name: 'Mark', last_name: 'Hensson')
+
     assert_not user.save
-    assert_equal user.errors[:email].count, 2
+    assert_equal 2, user.errors[:email].count
     assert_includes user.errors[:email], "can't be blank"
     assert_includes user.errors[:email], 'is invalid'
   end
 
   test "should not save with invalid email" do
     user = User.new(email: 'new.useremail.com', password: 'password123')
+
     assert_not user.save
-    assert_equal user.errors[:email].count, 1
+    assert_equal 1, user.errors[:email].count
     assert_includes user.errors[:email], 'is invalid'
   end
 
   test "should not save with repeated email" do
     user = User.new(email: 'john.doe@email.com', password: 'password123')
+
     assert_not user.save
-    assert_equal user.errors[:email].count, 1
+    assert_equal 1, user.errors[:email].count
     assert_includes user.errors[:email], 'has already been taken'
   end
 
@@ -52,8 +55,9 @@ class UserTest < ActiveSupport::TestCase
 
   test "should not save with short password" do
     user = User.new(email: 'new.useremail.com', password: 'passwor')
+
     assert_not user.save
-    assert_equal user.errors[:password].count, 1
+    assert_equal 1, user.errors[:password].count
     assert_includes user.errors[:password], 'is too short (minimum is 8 characters)'
   end
 
@@ -61,8 +65,9 @@ class UserTest < ActiveSupport::TestCase
 
   test "should not save without first_name" do
     user = User.new(email: 'new.user@email.com', password: 'password123', last_name: 'Hensson')
+
     assert_not user.save
-    assert_equal user.errors[:first_name].count, 1
+    assert_equal 1, user.errors[:first_name].count
     assert_includes user.errors[:first_name], "can't be blank"
   end
 
@@ -70,8 +75,9 @@ class UserTest < ActiveSupport::TestCase
 
   test "should not save without last_name" do
     user = User.new(email: 'new.user@email.com', password: 'password123', first_name: 'Hensson')
+
     assert_not user.save
-    assert_equal user.errors[:last_name].count, 1
+    assert_equal 1, user.errors[:last_name].count
     assert_includes user.errors[:last_name], "can't be blank"
   end
 
