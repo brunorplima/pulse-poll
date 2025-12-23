@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
-  # API routes
-  scope :api, as: :api do
-    scope :auth, as: :auth do
-      post 'register', to: 'authentication#register', as: :register
-      post 'login', to: 'authentication#login', as: :login
-      post 'logout', to: 'authentication#logout', as: :logout
+  # API v1 routes
+  namespace :api do
+    namespace :v1 do
+      scope :auth do
+        post 'register', to: 'authentication#register', as: :auth_register
+        post 'login', to: 'authentication#login', as: :auth_login
+        post 'logout', to: 'authentication#logout', as: :auth_logout
+      end
     end
   end
 
