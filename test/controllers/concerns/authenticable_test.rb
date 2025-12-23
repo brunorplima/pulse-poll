@@ -8,7 +8,7 @@ class AuthenticableTest < ActiveSupport::TestCase
     attr_accessor :rendered_response, :rendered_status
 
     def request
-      @request ||= Struct.new(:headers, keyword_init: true)
+      @request ||= Struct.new(:headers, keyword_init: true).new(headers: {})
     end
 
     def render(json:, status:)

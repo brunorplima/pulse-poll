@@ -28,7 +28,7 @@ module Api
 
       # POST /api/v1/auth/logout - Logout authenticated user
       def logout
-        current_user.increment(:token_version)
+        current_user.increment!(:token_version) # rubocop:disable Rails/SkipsModelValidations
         render json: { message: 'Logged out successfully' }, status: :ok
       end
 
