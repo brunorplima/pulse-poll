@@ -1,0 +1,51 @@
+require:
+  - rubocop-rails
+  - rubocop-minitest
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  Exclude:
+    - 'bin/**/*'
+    - 'db/schema.rb'
+    - 'db/migrate/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'storage/**/*'
+    - 'node_modules/**/*'
+
+# Line length - allow slightly longer lines
+Layout/LineLength:
+  Max: 130
+
+# Allow compact module/class style for namespaced controllers
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Documentation not required for every class
+Style/Documentation:
+  Enabled: false
+
+# Allow using `and return` pattern in controllers
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+# Frozen string literal not required (Rails handles this)
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Metrics - be a bit more lenient
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 15
+
+Metrics/ClassLength:
+  Max: 200
+
+# Rails-specific
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'test/**/*'
+
