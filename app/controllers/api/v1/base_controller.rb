@@ -2,7 +2,6 @@
 module Api
   module V1
     class BaseController < ApplicationController
-
       rescue_from ActionController::ParameterMissing, with: :bad_request
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from ActiveRecord::RecordInvalid, with: :unprocessable_content
@@ -33,4 +32,3 @@ module Api
     end
   end
 end
-

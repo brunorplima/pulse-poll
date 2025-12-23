@@ -8,7 +8,7 @@ class AuthenticableTest < ActiveSupport::TestCase
     attr_accessor :rendered_response, :rendered_status
 
     def request
-      @request ||= OpenStruct.new(headers: {})
+      @request ||= Struct.new(:headers, keyword_init: true).new(headers: {})
     end
 
     def render(json:, status:)
@@ -46,7 +46,7 @@ class AuthenticableTest < ActiveSupport::TestCase
     @controller.authenticate_user
 
     assert_equal :unauthorized, @controller.rendered_status
-    assert @controller.rendered_response[:error].present?
+    assert_predicate @controller.rendered_response[:error], :present?
   end
 
   test "returns unauthorized when token is tampered" do
@@ -71,7 +71,7 @@ class AuthenticableTest < ActiveSupport::TestCase
   # --- User not found tests ---
 
   test "returns unauthorized when user does not exist" do
-    token = JwtService.encode({ user_id: 999999 })
+    token = JwtService.encode({ user_id: 999_999 })
     @controller.request.headers['Authorization'] = "Bearer #{token}"
     @controller.authenticate_user
 

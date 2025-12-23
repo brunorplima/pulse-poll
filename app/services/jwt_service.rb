@@ -8,7 +8,7 @@ class JwtService
   # @param payload [Hash] The data to encode (e.g., { user_id: 1 })
   # @param exp [Time] Token expiration time (default: 1 hour from now)
   # @return [String] The encoded JWT token
-  def self.encode(payload, exp = 1.hours.from_now)
+  def self.encode(payload, exp = 1.hour.from_now)
     payload[:exp] = exp.to_i
     JWT.encode(payload, SECRET_KEY, 'HS256')
   end

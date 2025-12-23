@@ -16,7 +16,7 @@ module Authenticable
       render json: { error: 'Missing token' }, status: :unauthorized
       return
     end
-    token = auth_header.split(' ').last
+    token = auth_header.split.last
 
     payload = handle_payload(token)
     return if payload.blank?

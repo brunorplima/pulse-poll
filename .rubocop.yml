@@ -1,0 +1,81 @@
+plugins:
+  - rubocop-rails
+  - rubocop-minitest
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  Exclude:
+    - 'bin/**/*'
+    - 'db/schema.rb'
+    - 'db/migrate/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'storage/**/*'
+    - 'node_modules/**/*'
+    - 'config/**/*'
+    - 'lib/tasks/**/*'
+
+# Indentation width - 2 spaces
+Layout/IndentationWidth:
+  Width: 2
+
+# Multiline method call indentation - use 4 spaces (2 tabs) indentation
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 4
+
+# Line length - allow slightly longer lines
+Layout/LineLength:
+  Max: 130
+
+# Allow compact module/class style for namespaced controllers
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Documentation not required for every class
+Style/Documentation:
+  Enabled: false
+
+# Allow using `and return` pattern in controllers
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+# Frozen string literal not required (Rails handles this)
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Don't enforce quote style - allow both single and double quotes
+Style/StringLiterals:
+  Enabled: false
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Allow both %i[] and %i() style for percent literals
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+# Don't enforce hash key alignment - allow unaligned hashes
+Layout/HashAlignment:
+  Enabled: false
+
+# Metrics - be a bit more lenient
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/ClassLength:
+  Max: 200
+
+# Minitest-specific
+Minitest/MultipleAssertions:
+  Enabled: false
+
+# Rails-specific
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'test/**/*'
+
